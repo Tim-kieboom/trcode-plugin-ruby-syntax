@@ -2,6 +2,7 @@ id = "ruby-syntax"
 name = "Ruby"
 version = "0.0.1"
 abi = "1.12"
+tags = ["syntax", "ruby"]
 # A language and nothing else: no module of its own and no pane. The grammar is the file the
 # installer downloads and checks.
 
