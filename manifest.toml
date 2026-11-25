@@ -1,0 +1,181 @@
+id = "ruby-syntax"
+name = "Ruby"
+version = "0.0.1"
+abi = "1.12"
+# A language and nothing else: no module of its own and no pane. The grammar is the file the
+# installer downloads and checks.
+
+[language]
+name = "Ruby"
+grammar = "ruby.wasm"
+extensions = ["rb", "rake", "gemspec", "ru"]
+comment = "#"
+# The query is the grammar's own (queries/highlights.scm of https://github.com/tree-sitter/tree-sitter-ruby, v0.23.1 (71bd32f)).
+# The patterns are in the opposite order of the grammar's file: TerminalCode takes the first of two
+# patterns on the same text, and that file is written for the last (as Neovim and Zed take it).
+highlights = '''
+[
+  "("
+  ")"
+  "["
+  "]"
+  "{"
+  "}"
+  "%w("
+  "%i("
+] @punctuation.bracket
+
+[
+  ","
+  ";"
+  "."
+] @punctuation.delimiter
+
+; Operators
+
+[
+"="
+"=>"
+"->"
+] @operator
+
+(comment) @comment
+
+(interpolation
+  "#{" @punctuation.special
+  "}" @punctuation.special) @embedded
+
+[
+  (nil)
+  (true)
+  (false)
+] @constant.builtin
+
+[
+  (integer)
+  (float)
+] @number
+
+(escape_sequence) @escape
+
+(regex) @string.special.regex
+
+[
+  (simple_symbol)
+  (delimited_symbol)
+  (hash_key_symbol)
+  (bare_symbol)
+] @string.special.symbol
+
+; Literals
+
+[
+  (string)
+  (bare_string)
+  (subshell)
+  (heredoc_body)
+  (heredoc_beginning)
+] @string
+
+(optional_parameter name: (identifier) @variable.parameter)
+
+(keyword_parameter name: (identifier) @variable.parameter)
+
+(splat_parameter (identifier) @variable.parameter)
+
+(method_parameters (identifier) @variable.parameter)
+
+(lambda_parameters (identifier) @variable.parameter)
+
+(hash_splat_parameter (identifier) @variable.parameter)
+
+(destructured_parameter (identifier) @variable.parameter)
+
+(block_parameters (identifier) @variable.parameter)
+
+(block_parameter (identifier) @variable.parameter)
+
+[
+  (self)
+  (super)
+] @variable.builtin
+
+((constant) @constant
+ (#match? @constant "^[A-Z\\d_]+$"))
+
+(hash_splat_nil
+  "**" @operator) @constant.builtin
+
+(encoding) @constant.builtin
+
+(line) @constant.builtin
+
+(file) @constant.builtin
+
+((identifier) @constant.builtin
+ (#match? @constant.builtin "^__(FILE|LINE|ENCODING)__$"))
+
+; Identifiers
+
+[
+  (class_variable)
+  (instance_variable)
+] @property
+
+(singleton_method name: [(identifier) (constant)] @function.method)
+
+(method name: [(identifier) (constant)] @function.method)
+
+(setter (identifier) @function.method)
+
+; Function definitions
+
+(alias (identifier) @function.method)
+
+((identifier) @function.method.builtin
+ (#eq? @function.method.builtin "require"))
+
+(call
+  method: [(identifier) (constant)] @function.method)
+
+; Function calls
+
+"defined?" @function.method.builtin
+
+(constant) @constructor
+
+((identifier) @keyword
+ (#match? @keyword "^(private|protected|public)$"))
+
+[
+  "alias"
+  "and"
+  "begin"
+  "break"
+  "case"
+  "class"
+  "def"
+  "do"
+  "else"
+  "elsif"
+  "end"
+  "ensure"
+  "for"
+  "if"
+  "in"
+  "module"
+  "next"
+  "or"
+  "rescue"
+  "retry"
+  "return"
+  "then"
+  "unless"
+  "until"
+  "when"
+  "while"
+  "yield"
+] @keyword
+
+(identifier) @variable
+'''
